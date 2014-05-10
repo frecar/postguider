@@ -1,16 +1,47 @@
-import facebook
+import json
+import re
+from models import graph, Post, PostEncoder
 
-from settings import oath_key
-from models import Post
+max_searches = 50
 
 
-graph = facebook.GraphAPI(oath_key)
+def newsfeed(data, searches_completed, until):
+    print "searching %s %s %s " % (searches_completed, until, "me")
 
-profile = graph.get_object("me")
-feed = graph.get_connections("me", "home", limit=100)
+    if not until:
+        feed = graph.get_connections("me", "home", limit=50)
+    else:
+        feed = graph.get_connections("me", "home", limit=50, until=until)
 
-for element in feed['data']:
-    post = Post(element)
+    data.extend(feed['data'])
 
-    print post.id, post.likes_count
+    if searches_completed < max_searches:
 
+        if 'paging' in feed and 'next' in feed['paging']:
+            previous = feed['paging']['next']
+            until = re.findall("until=(\d+)", previous)
+
+            newsfeed(data, searches_completed + 1, until[0])
+
+    return data
+
+
+def get_newsfeed(user_id):
+    relevant_posts = []
+
+    for element in newsfeed([], 0, None):
+        #if 'from' in element and 'category' in element['from']:
+        #    continue
+
+        post = Post(element)
+
+        relevant_posts.append(post)
+
+    data_for_graph = []
+    for post in relevant_posts:
+        data_for_graph.append([post.minutes_after_midnight, post.likes_count])
+
+    print len(data_for_graph)
+
+    with open("testdata.json", "wb") as file:
+        file.write(json.dumps(data_for_graph))
