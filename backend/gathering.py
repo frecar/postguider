@@ -30,8 +30,8 @@ def get_newsfeed(user_id):
     relevant_posts = []
 
     for element in newsfeed([], 0, None):
-        #if 'from' in element and 'category' in element['from']:
-        #    continue
+        if 'from' in element and 'category' in element['from']:
+            continue
 
         post = Post(element)
 
