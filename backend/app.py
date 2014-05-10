@@ -1,12 +1,16 @@
-import json
-from aggregate import should_user_post
-from gathering import get_newsfeed
+import ConfigParser
 
-#get_newsfeed("me")
+from flask import Flask
+from flask.ext.cache import Cache
 
-data = ""
 
-with open("testdata.json", "r") as file:
-    data = json.loads(file.read())
+config = ConfigParser.ConfigParser()
+config.read(['defaults.cfg', 'local.cfg'])
+CONFIG = {
+    'DEBUG': config.getboolean('flask', 'debug'),
+    'CACHE_TYPE': config.get('flask', 'cache_type')
+}
 
-should_user_post(data)
+app = Flask(__name__)
+app.config.update(CONFIG)
+cache = Cache(app)
