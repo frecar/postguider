@@ -31,9 +31,9 @@ class Newsfeed:
         graph = facebook.GraphAPI(token)
 
         if not until:
-            feed = graph.get_connections("me", "home", limit=2)
+            feed = graph.get_connections("me", "home", limit=1)
         else:
-            feed = graph.get_connections("me", "home", limit=2, until=until)
+            feed = graph.get_connections("me", "home", limit=30, until=until)
 
         for element in feed['data']:
 
