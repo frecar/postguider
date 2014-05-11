@@ -3,6 +3,8 @@ import json
 import re
 from stemming.porter2 import stem
 
+import time
+
 import facebook
 import datetime
 import math
@@ -34,7 +36,7 @@ class Newsfeed:
         if not until:
             feed = graph.get_connections("me", "home", limit=1)
         else:
-            feed = graph.get_connections("me", "home", limit=10, until=until)
+            feed = graph.get_connections("me", "home", limit=20, until=until)
 
         for element in feed['data']:
 
@@ -60,6 +62,8 @@ class Newsfeed:
             if 'paging' in feed and 'next' in feed['paging']:
                 previous = feed['paging']['next']
                 until = re.findall("until=(\d+)", previous)
+
+                time.sleep(1)
 
                 Newsfeed.newsfeed(token, data, searches_completed + 1, until[0])
 
