@@ -1,9 +1,8 @@
 import json
 from flask import make_response
-from aggregate import should_user_post_now
+from aggregate import analyze_time
 from app import app
-from gathering import rate_post
-from models import PostEncoder
+from models import PostEncoder, Post, Newsfeed
 
 
 def json_response(data, status=200):
@@ -12,11 +11,8 @@ def json_response(data, status=200):
     return response
 
 
-@app.route('/post_now/<token>/<text>', methods=['GET', 'POST'])
-def post_now(token, text):
-    #if not form.validate_on_submit():
-    #    return "Bad format, you need to make a proper POST request with access token and text"
-
+@app.route('/analyze_post/<token>/<text>', methods=['GET', 'POST'])
+def analyze_post(token, text):
     response = {
         'post_now': False,
         'hours_to_wait': 0,
@@ -24,41 +20,22 @@ def post_now(token, text):
         'hint': "",
     }
 
-    with open("testdata.json", "r") as file:
-        data = json.loads(file.read())
+    data = Newsfeed.filter_only_posts_by_people(token)
+    hours_to_wait, post_now_score = analyze_time(data)
 
-    post_now_based_on_time, hours_to_wait, bucket_score = should_user_post_now(data)
-
-    rate_time = 1
-
-    if not post_now_based_on_time:
-        rate_time = bucket_score
-
-    response['score'] = rate_post(text)[0] * 0.5 + rate_time * 0.5
+    response['score'] = Post.rate_text(text)[0] * 0.5 + post_now_score * 0.5
     response['hours_to_wait'] = hours_to_wait
 
-    if rate_post(text)[0] < 0.5:
+    if Post.rate_text(text)[0] < 0.5:
         response['hint'] = "Try to write a better text\n"
 
-    if rate_time < 0.5:
+    if post_now_score < 0.5:
         response['hint'] = "You should wait for %s hours to post this\n" % hours_to_wait
 
     response['post_now'] = response['score'] > 0.5
 
     return json_response(
         response
-    )
-
-
-@app.route('/like_graph_data')
-def like_graph_data():
-    # data = get_newsfeed("me")
-
-    with open("testdata.json", "r") as file:
-        data = json.loads(file.read())
-
-    return json_response(
-        data
     )
 
 

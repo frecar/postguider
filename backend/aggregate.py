@@ -14,7 +14,7 @@ def calculate_bucket_score(bucket, average):
         return min(1, 0.5 + (diff / average))
 
 
-def should_user_post_now(data):
+def analyze_time(data):
     buckets = [0] * 24
     post_count = [0] * 24
 
@@ -30,14 +30,9 @@ def should_user_post_now(data):
 
     hour_now = datetime.datetime.now().hour
 
-    post_now = False
     hours_to_wait = 0
 
-    bucket_score = 1
-
-    if buckets[hour_now] >= average:
-        post_now = True
-    else:
+    if buckets[hour_now] < average:
         rest_list = buckets + buckets
 
         i = hour_now
@@ -47,7 +42,4 @@ def should_user_post_now(data):
 
         hours_to_wait = i - hour_now
 
-        post_now = False
-
-    return post_now, hours_to_wait, calculate_bucket_score(buckets[hour_now], average)
-
+    return hours_to_wait, calculate_bucket_score(buckets[hour_now], average)
