@@ -34,7 +34,7 @@ class Newsfeed:
         if not until:
             feed = graph.get_connections("me", "home", limit=1)
         else:
-            feed = graph.get_connections("me", "home", limit=30, until=until)
+            feed = graph.get_connections("me", "home", limit=10, until=until)
 
         for element in feed['data']:
 
