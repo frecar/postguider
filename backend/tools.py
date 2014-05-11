@@ -32,7 +32,7 @@ def dump_relevant_newsfeed_to_elasticsearch(token):
 
     relevant_posts = []
 
-    for element in Newsfeed.newsfeed(token, [], 0, None):
+    for element in Newsfeed.newsfeed(token, [], 0, None, 1000):
         if 'from' in element and 'category' in element['from']:
             continue
 
@@ -56,7 +56,7 @@ def dump_one_and_one_post_elasticsearch(token):
 
     relevant_posts = []
 
-    for element in Newsfeed.newsfeed(token, [], 0, None):
+    for element in Newsfeed.newsfeed(token, [], 0, None, 1000):
         if 'from' in element and 'category' in element['from']:
             continue
 

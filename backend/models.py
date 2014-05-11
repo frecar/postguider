@@ -69,7 +69,7 @@ class Newsfeed:
 
                 time.sleep(1)
 
-                Newsfeed.newsfeed(token, data, searches_completed + 1, until[0])
+                Newsfeed.newsfeed(token, data, searches_completed + 1, until[0], max_searches)
 
     @staticmethod
     def get_posts_elasticsearch(token):
