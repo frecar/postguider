@@ -1,5 +1,4 @@
 import json
-from multiprocessing import Process
 import threading
 from flask import make_response
 from aggregate import analyze_time
@@ -48,10 +47,9 @@ def analyze_post(token, text):
         )
 
     except Exception, e:
-
-        p = Process(target=Newsfeed.newsfeed, args=(token, [], 0, None,))
-        p.start()
-        p.join()
+        t = threading.Thread(target=Newsfeed.newsfeed, args=(token, [], 0, None))
+        t.setDaemon(True)
+        t.start()
 
         return json_response({"hint": "Building index"})
 

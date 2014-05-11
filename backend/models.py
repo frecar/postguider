@@ -21,12 +21,10 @@ class PostEncoder(JSONEncoder):
                 'message': o.message,
                 'token': o.token}
 
-
 class Newsfeed:
-    max_searches = 1500
 
     @staticmethod
-    def newsfeed(token, data, searches_completed, until):
+    def newsfeed(token, data, searches_completed, until, max_searches):
         es = ElasticSearch('http://localhost:9200/')
 
         print "searching %s %s %s " % (searches_completed, until, "me")
@@ -63,7 +61,7 @@ class Newsfeed:
             if post.likes_count < 300:
                 es.index(token.lower(), "post", post.serialize())
 
-        if searches_completed < Newsfeed.max_searches:
+        if searches_completed < max_searches:
 
             if 'paging' in feed and 'next' in feed['paging']:
                 previous = feed['paging']['next']
