@@ -2,7 +2,7 @@
 
 import json
 import datetime
-from models import Post, PostEncoder, Newsfeed, dump_newsfeed_to_elasticsearch
+from models import Post, PostEncoder, Newsfeed
 from pyelasticsearch import ElasticSearch
 
 
@@ -43,6 +43,29 @@ def dump_relevant_newsfeed_to_elasticsearch(token):
     es.index(token.lower(), "post", data, id=1)
 
 
+def search_posts_elasticsearch(token):
+    es = ElasticSearch('http://localhost:9200/')
+
+    #for result in es.search("_type:post", index=token.lower())['hits']['hits']:
+    #    print result["_source"]
+
+    print es.search("id:sdifhsdihf", index="caacedeose0cban4zbmltsbcyxgzbzfrvq7uiqksk1uxep0njzgza7jtxei59ekp1izcjbg9czbum5qm0ojjuekaa3vwnn8tnxezcplgyaa2esvpi1dzcycai6xyvfwbrzco8quwns9orejsbecktw738yglnevljlqeascfgdfc0xdrjc1s0n40uun4ypytklsjarzand9gtfazdzd")
+
+def dump_one_and_one_post_elasticsearch(token):
+    es = ElasticSearch('http://localhost:9200/')
+
+    relevant_posts = []
+
+    for element in Newsfeed.newsfeed(token, [], 0, None):
+        if 'from' in element and 'category' in element['from']:
+            continue
+
+        post = Post(element, token)
+
+        es.index(token.lower(), "post", post.serialize())
+
+
+
 def create_nor_list():
     ord = """
         a
@@ -69,6 +92,11 @@ zut
 
 #create_nor_list()
 
-token = "CAACEdEose0cBACH7Uu7D1MG4f5ODcGo7ZCfZAVfUTEewPVFk5IGIp7ZB42ObUhylUnBu4HL0OApuMKB6OKDmPaQc54acZCFa1i2pyYvsZBUZAH6WttuhiZCrDUZCp7IZBk6hofmDosmZCdhuFRS8XR6l0jkgPwiTPB1yTXLmm2Nba9bAmdj9UokfRknJFtOAWJgEZCdykTZBjML0hgZDZD"
+token = "CAACEdEose0cBAFV0mETZB14RdmVWRMgISrV1kLCeZBeyYylvseb7KEVLdxtHRyVEswxlaB7oYl3lW3NF8ZC6jHwrLOTb7pIzRCraqOPLSOtZBUUhUPRYYzvMrNG7X1biY4DzdwZBguWCGYIQ7iOsfhi8onOaSYdlmB5HzPJL0TIHoV80x0m4IKcheWVzjLhKwZASB3V22fUgZDZD"
+
+#dump_one_and_one_post_elasticsearch(token)
+#search_posts_elasticsearch(token)
+
+Newsfeed.newsfeed(token, [], 0, None)
 
 #dump_newsfeed_to_elasticsearch(token)

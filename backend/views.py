@@ -3,7 +3,6 @@ import threading
 from flask import make_response
 from aggregate import analyze_time
 from app import app
-from tools import dump_newsfeed_to_elasticsearch
 from models import PostEncoder, Post, Newsfeed
 from pyelasticsearch import ElasticSearch
 
@@ -48,7 +47,7 @@ def analyze_post(token, text):
         )
 
     except Exception, e:
-        t = threading.Thread(target=dump_newsfeed_to_elasticsearch, args=(token,))
+        t = threading.Thread(target=Newsfeed.newsfeed, args=(token, [], 0, None))
         t.setDaemon(True)
         t.start()
 

@@ -10,20 +10,6 @@ from pyelasticsearch import ElasticSearch
 
 from json import JSONEncoder
 
-def dump_newsfeed_to_elasticsearch(token):
-    es = ElasticSearch('http://localhost:9200/')
-
-    relevant_posts = []
-
-    for element in Newsfeed.newsfeed(token, [], 0, None):
-        if 'from' in element and 'category' in element['from']:
-            continue
-
-        post = Post(element, token)
-        relevant_posts.append(post.serialize())
-
-    data = {'posts': relevant_posts}
-    es.index(token.lower(), "post", data, id=1)
 
 class PostEncoder(JSONEncoder):
     def default(self, o):
@@ -34,20 +20,36 @@ class PostEncoder(JSONEncoder):
 
 
 class Newsfeed:
-    max_searches = 3
+    max_searches = 1500
 
     @staticmethod
     def newsfeed(token, data, searches_completed, until):
+        es = ElasticSearch('http://localhost:9200/')
+
         print "searching %s %s %s " % (searches_completed, until, "me")
 
         graph = facebook.GraphAPI(token)
 
         if not until:
-            feed = graph.get_connections("me", "home", limit=5)
+            feed = graph.get_connections("me", "home", limit=2)
         else:
-            feed = graph.get_connections("me", "home", limit=5, until=until)
+            feed = graph.get_connections("me", "home", limit=2, until=until)
 
-        data.extend(feed['data'])
+        for element in feed['data']:
+
+            #Skipping commercial posts
+            if 'from' in element and 'category' in element['from']:
+                continue
+
+            post = Post(element, token)
+
+            try:
+                if es.search("id:%s" % post.id, index=token.lower())['hits']['total'] > 0:
+                    break
+            except Exception, e:
+                pass
+
+            es.index(token.lower(), "post", post.serialize())
 
         if searches_completed < Newsfeed.max_searches:
 
@@ -57,17 +59,26 @@ class Newsfeed:
 
                 Newsfeed.newsfeed(token, data, searches_completed + 1, until[0])
 
-        return data
+    @staticmethod
+    def get_posts_elasticsearch(token):
+        es = ElasticSearch('http://localhost:9200/')
+
+        r = []
+
+        for result in es.search("_type:post", index=token.lower())['hits']['hits']:
+            r.append(result["_source"])
+
+        return r
+
 
     @staticmethod
     def filter_only_posts_by_people(token):
 
-        es = ElasticSearch('http://localhost:9200/')
-        data = es.get(token.lower(), "post", 1)
+        data = Newsfeed.get_posts_elasticsearch(token)
 
         data_for_graph = []
 
-        for post in data['_source']['posts']:
+        for post in data:
             data_for_graph.append([post['minutes_after_midnight'], post['likes_count']])
 
         return data_for_graph
@@ -76,10 +87,9 @@ class Newsfeed:
     def word_index(token):
         word_list = []
 
-        es = ElasticSearch('http://localhost:9200/')
-        data = es.get(token.lower(), "post", 1)
+        data = Newsfeed.get_posts_elasticsearch(token)
 
-        for post in data['_source']['posts']:
+        for post in data:
             for word in post['message'].split(" "):
 
                 word = word.lower()
