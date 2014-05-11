@@ -77,7 +77,7 @@ class Newsfeed:
 
         r = []
 
-        for result in es.search("_type:post", index=token.lower())['hits']['hits']:
+        for result in es.search("_type:post", index=token.lower(), size=1000)['hits']['hits']:
             r.append(result["_source"])
 
         return r
