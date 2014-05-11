@@ -51,8 +51,8 @@ class Word:
     def calculate_score(self):
         #score = (self.likes / (math.log(self.likes + 1, 2) + 1)) / self.count
 
-        score = self.likes / max(math.log(self.count, 2), 1)
-        score = score / max(self.likes, 1)
+        score = self.likes / (math.log(self.count, 10) + 1  )
+        score = score / (self.likes+1)
 
         if self.is_stopword():
             score = score / (math.log(self.likes + 1, 2) + 1)

@@ -1,7 +1,20 @@
 import datetime
 
 
-def should_user_post(data):
+def calculate_bucket_score(bucket, average):
+    if bucket == average:
+        return 0.5
+
+    elif bucket < average:
+        diff = average - bucket
+        return max(0, 0.5 - (diff / average))
+
+    elif bucket > average:
+        diff = bucket - average
+        return min(1, 0.5 + (diff / average))
+
+
+def should_user_post_now(data):
     buckets = [0] * 24
     post_count = [0] * 24
 
@@ -10,21 +23,20 @@ def should_user_post(data):
         post_count[bucket] += 1
         buckets[bucket] += post[1]
 
-    average = sum(buckets) / sum(post_count)
+    average = sum(buckets) / (sum(post_count) + 1)
 
     for bucket, likes in enumerate(buckets):
         buckets[bucket] = buckets[bucket] / (post_count[bucket] + 1)
-
-    print buckets
 
     hour_now = datetime.datetime.now().hour
 
     post_now = False
     hours_to_wait = 0
 
+    bucket_score = 1
+
     if buckets[hour_now] >= average:
         post_now = True
-
     else:
         rest_list = buckets + buckets
 
@@ -37,5 +49,5 @@ def should_user_post(data):
 
         post_now = False
 
-    return post_now, hours_to_wait
+    return post_now, hours_to_wait, calculate_bucket_score(buckets[hour_now], average)
 
