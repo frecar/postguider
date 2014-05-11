@@ -19,7 +19,7 @@ def analyze_post(token, text):
         'post_now': False,
         'hours_to_wait': 1,
         'score': 0,
-        'hint': "Please wait while we set up the system for you!",
+        'hint': "Building index",
     }
 
     try:
