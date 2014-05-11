@@ -1,3 +1,4 @@
 facebook-sdk
 flask
 flask-cache
+pyelasticsearch
