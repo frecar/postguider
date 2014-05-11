@@ -34,7 +34,7 @@ class PostEncoder(JSONEncoder):
 
 
 class Newsfeed:
-    max_searches = 50
+    max_searches = 3
 
     @staticmethod
     def newsfeed(token, data, searches_completed, until):
@@ -43,9 +43,9 @@ class Newsfeed:
         graph = facebook.GraphAPI(token)
 
         if not until:
-            feed = graph.get_connections("me", "home", limit=50)
+            feed = graph.get_connections("me", "home", limit=5)
         else:
-            feed = graph.get_connections("me", "home", limit=50, until=until)
+            feed = graph.get_connections("me", "home", limit=5, until=until)
 
         data.extend(feed['data'])
 
