@@ -56,10 +56,12 @@ class Newsfeed:
             try:
                 if es.search("id:%s" % post.id, index=token.lower())['hits']['total'] > 0:
                     break
+
             except Exception, e:
                 pass
 
-            es.index(token.lower(), "post", post.serialize())
+            if post.likes_count < 300:
+                es.index(token.lower(), "post", post.serialize())
 
         if searches_completed < Newsfeed.max_searches:
 
