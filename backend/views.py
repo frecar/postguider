@@ -17,27 +17,31 @@ def json_response(data, status=200):
 def analyze_post(token, text):
     response = {
         'post_now': False,
-        'hours_to_wait': 0,
+        'hours_to_wait': 1,
         'score': 0,
-        'hint': "",
+        'hint': "Please wait while we set up the system for you!",
     }
 
     try:
         data = Newsfeed.filter_only_posts_by_people(token)
 
     except Exception, e:
-        Newsfeed.newsfeed(token, [], 0, None, 5)
+        es = ElasticSearch('http://localhost:9200/')
 
-        while True:
-            try:
-                data = Newsfeed.filter_only_posts_by_people(token)
-            except Exception, e:
-                continue
-            break
+        try:
+            es.create_index(token.lower())
+            Newsfeed.newsfeed(token, [], 0, None, 1)
 
-        t = threading.Thread(target=Newsfeed.newsfeed, args=(token, [], 0, None, 1500))
-        t.setDaemon(True)
-        t.start()
+            t = threading.Thread(target=Newsfeed.newsfeed, args=(token, [], 0, None, 1500))
+            t.setDaemon(True)
+            t.start()
+
+        except Exception, e:
+            print e.message
+
+        return json_response(
+            response
+        )
 
     hours_to_wait, post_now_score, buckets, average = analyze_time(data)
 
@@ -54,7 +58,7 @@ def analyze_post(token, text):
     response['post_now'] = response['score'] > 0.5
 
     if response['post_now']:
-        response['hint'] = "You're good at this! Post this right away!"
+        response['hint'] = "You're really good at this! Post this right away!"
 
     return json_response(
         response
