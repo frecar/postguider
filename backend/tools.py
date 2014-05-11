@@ -97,6 +97,7 @@ token = "CAACEdEose0cBAFV0mETZB14RdmVWRMgISrV1kLCeZBeyYylvseb7KEVLdxtHRyVEswxlaB
 #dump_one_and_one_post_elasticsearch(token)
 #search_posts_elasticsearch(token)
 
-Newsfeed.newsfeed(token, [], 0, None)
+
+#Newsfeed.newsfeed(token, [], 0, None)
 
 #dump_newsfeed_to_elasticsearch(token)

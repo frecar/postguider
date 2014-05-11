@@ -16,7 +16,8 @@ class PostEncoder(JSONEncoder):
         return {'id': o.id,
                 'minutes_after_midnight': o.minutes_after_midnight,
                 'likes_count': o.likes_count,
-                'message': o.message}
+                'message': o.message,
+                'token': o.token}
 
 
 class Newsfeed:
@@ -122,6 +123,7 @@ class Post:
         self.id = facebook_api_data['id']
 
         self.graph = facebook.GraphAPI(token)
+        self.token = token
 
         self.message = ""
         if 'message' in facebook_api_data:
@@ -178,7 +180,8 @@ class Post:
         return {'id': self.id,
                 'minutes_after_midnight': self.minutes_after_midnight,
                 'likes_count': self.likes_count,
-                'message': self.message}
+                'message': self.message,
+                'token': self.token}
 
 
 class Word:
