@@ -18,7 +18,9 @@ def analyze_post(token, text):
     response = {
         'post_now': False,
         'hours_to_wait': 1,
-        'score': 0,
+        'total_score': 0,
+        'time_score': 0,
+        'text_score': 0,
         'hint': "Building index",
     }
 
@@ -45,15 +47,16 @@ def analyze_post(token, text):
 
     hours_to_wait, post_now_score, buckets, average = analyze_time(data)
 
-    response['score'] = Post.rate_text(text, token)[0] * 0.5 + post_now_score * 0.5
-    response['hours_to_wait'] = hours_to_wait
+    response['total_score'] = Post.rate_text(text, token)[0] * 0.5 + post_now_score * 0.5
+    response['text_score'] = Post.rate_text(text, token)[0]
+    response['time_score'] = post_now_score
 
+    response['hours_to_wait'] = hours_to_wait
     if Post.rate_text(text, token)[0] < 0.5:
         response['hint'] = "Try to write a better text\n"
 
     if post_now_score < 0.5:
         response['hint'] = "You should wait for %s hours to post this\n" % hours_to_wait
-
 
     response['post_now'] = response['score'] > 0.5
 
