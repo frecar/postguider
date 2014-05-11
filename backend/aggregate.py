@@ -42,4 +42,4 @@ def analyze_time(data):
 
         hours_to_wait = i - hour_now
 
-    return hours_to_wait, calculate_bucket_score(buckets[hour_now], average)
+    return hours_to_wait, calculate_bucket_score(buckets[hour_now], average), buckets, average

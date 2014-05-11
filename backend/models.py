@@ -6,8 +6,24 @@ from stemming.porter2 import stem
 import facebook
 import datetime
 import math
+from pyelasticsearch import ElasticSearch
 
 from json import JSONEncoder
+
+def dump_newsfeed_to_elasticsearch(token):
+    es = ElasticSearch('http://localhost:9200/')
+
+    relevant_posts = []
+
+    for element in Newsfeed.newsfeed(token, [], 0, None):
+        if 'from' in element and 'category' in element['from']:
+            continue
+
+        post = Post(element, token)
+        relevant_posts.append(post.serialize())
+
+    data = {'posts': relevant_posts}
+    es.index(token.lower(), "post", data, id=1)
 
 class PostEncoder(JSONEncoder):
     def default(self, o):
@@ -18,7 +34,7 @@ class PostEncoder(JSONEncoder):
 
 
 class Newsfeed:
-    max_searches = 1
+    max_searches = 50
 
     @staticmethod
     def newsfeed(token, data, searches_completed, until):
@@ -45,30 +61,25 @@ class Newsfeed:
 
     @staticmethod
     def filter_only_posts_by_people(token):
-        relevant_posts = []
 
-        for element in Newsfeed.newsfeed(token, [], 0, None):
-            if 'from' in element and 'category' in element['from']:
-                continue
-
-            post = Post(element, token)
-
-            relevant_posts.append(post)
+        es = ElasticSearch('http://localhost:9200/')
+        data = es.get(token.lower(), "post", 1)
 
         data_for_graph = []
-        for post in relevant_posts:
-            data_for_graph.append([post.minutes_after_midnight, post.likes_count])
+
+        for post in data['_source']['posts']:
+            data_for_graph.append([post['minutes_after_midnight'], post['likes_count']])
 
         return data_for_graph
 
     @staticmethod
-    def word_index():
+    def word_index(token):
         word_list = []
 
-        with open("data/newsfeed.json", "r") as file:
-            data = json.loads(file.read())
+        es = ElasticSearch('http://localhost:9200/')
+        data = es.get(token.lower(), "post", 1)
 
-        for post in data:
+        for post in data['_source']['posts']:
             for word in post['message'].split(" "):
 
                 word = word.lower()
@@ -109,7 +120,11 @@ class Post:
         self.created_time = datetime.datetime.strptime(facebook_api_data['created_time'],
                                                        '%Y-%m-%dT%H:%M:%S+0000')
 
-        self.likes_count = self._count_likes()
+        if 'likes_count' not in facebook_api_data:
+            self.likes_count = self._count_likes()
+        else:
+            self.likes_count = facebook_api_data['likes_count']
+
         self.minutes_after_midnight = self._minutes_after_midnight_posted()
 
     def _count_likes(self):
@@ -120,14 +135,13 @@ class Post:
                                                              microsecond=0)
         return int(round(diff.total_seconds() / 60, 0))
 
-
     @staticmethod
-    def rate_text(text):
+    def rate_text(text, token):
         score = 0
 
         words = set([])
 
-        word_index = Newsfeed.word_index()
+        word_index = Newsfeed.word_index(token)
 
         for word in text.split(" "):
             word = word.lower()
@@ -149,6 +163,12 @@ class Post:
                 score += 0.5
 
         return score / (len(words)), len(words), text
+
+    def serialize(self):
+        return {'id': self.id,
+                'minutes_after_midnight': self.minutes_after_midnight,
+                'likes_count': self.likes_count,
+                'message': self.message}
 
 
 class Word:
