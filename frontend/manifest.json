@@ -1,1 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "PostGuider",
+  "description": "Facebook post adviser for like optimization.",
+  "version": "0.0.1",
+   "permissions": [
+    "https://*.facebook.com/*",
+    "*://*.facebook.com/",
+    "http://192.33.206.234:5000/*",
+    "http://luna.frecar.no:5001/*",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://www.facebook.com/*"],
+      "js": ["jquery.js",  "d3.js" , "myscripts.js", "graph/chart.js"]
+    }
+  ],
 
+    "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  }
+}

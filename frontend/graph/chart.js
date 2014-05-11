@@ -1,9 +1,10 @@
+function draw_like_time_chart(){
+	var maxLikes = d3.max(data, function(d) { return d[1]; });
 
-	 var maxLikes = d3.max(data, function(d) { return d[1]; });
 
-    var margin = {top: 20, right: 15, bottom: 60, left: 60}
-      , width = 960 - margin.left - margin.right
-      , height = 500 - margin.top - margin.bottom;
+    var margin = {top: 20, right: 15, bottom: 60, left: 35}
+      , width = document.getElementById('omgbox-plot').offsetWidth - margin.left - margin.right
+      , height =  200;
 
     var x = d3.scale.linear()
               .domain([0, 1440])
@@ -12,8 +13,7 @@
     var y = d3.scale.linear()
     	      .domain([0, maxLikes])
     	      .range([ height, 0 ]);
-
-    var chart = d3.select('body')
+    var chart = d3.select('#omgbox-plot')
 	.append('svg:svg')
 	.attr('width', width + margin.right + margin.left)
 	.attr('height', height + margin.top + margin.bottom)
@@ -29,7 +29,7 @@
     var xAxis = d3.svg.axis()
 	.scale(x)
 	.orient('bottom')
-	.tickValues(d3.range(0, 1440, 60))
+	.tickValues(d3.range(0, 1440, 120))
 	.tickFormat(function(d, i){
 	if(Math.ceil(d/60) < 10){
 		return "0" + Math.ceil(d/60) + ":00";
@@ -80,7 +80,7 @@
     
     //Set radius of plot-circles according to number of likes
     function setR(d){
-    	return (6*(Math.pow(Math.E, 1 + (d[1]+1)/maxLikes) * Math.log(d[1]+1)/Math.LN2) / (1.5*Math.log(maxLikes)));
+    	return (11*(Math.log(Math.E, 1 + (d[1]+1)/maxLikes) * Math.log(d[1]+1)/Math.LN2) / (1.5*Math.log(maxLikes)));
     }
     
     function setOpacity(d){
@@ -106,7 +106,7 @@
     	}
     }
     
-    var tooltip = d3.select("body").append("div")
+    var tooltip = d3.select('#omgbox-plot').append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
 
@@ -137,9 +137,9 @@
     	timestring = timestring + minutes.toString();
         
         tooltip.html(timestring
-        + "<br\>" + d[1] + " likes")
-        .style("left", d3.select(this).attr("cx") + "px")     
-  		.style("top", d3.select(this).attr("cy") + "px");
+        + "<br>" + d[1] + " likes")
+        .style("left", (d3.select(this).attr("cx")+ 100) + "px")
+  		.style("top", (d3.select(this).attr("cy")) + "px");
     }
     
     function mouseoutEvent(d){
@@ -162,3 +162,4 @@
           .style("opacity", setOpacity)
           .on("mouseover", mouseoverEvent)
     	  .on("mouseout", mouseoutEvent);
+}
