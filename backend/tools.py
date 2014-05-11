@@ -92,12 +92,11 @@ zut
 
 #create_nor_list()
 
-token = "CAACEdEose0cBAFV0mETZB14RdmVWRMgISrV1kLCeZBeyYylvseb7KEVLdxtHRyVEswxlaB7oYl3lW3NF8ZC6jHwrLOTb7pIzRCraqOPLSOtZBUUhUPRYYzvMrNG7X1biY4DzdwZBguWCGYIQ7iOsfhi8onOaSYdlmB5HzPJL0TIHoV80x0m4IKcheWVzjLhKwZASB3V22fUgZDZD"
+token = "CAACEdEose0cBAGVZCGprscut7Cp6kxsdT9Ar1MswxTafovNMojARufCMpeFArgVf7dVpLcpFDms5WvJxHMnIbKFjS2K2n6AU9vwJFLH7z8ZCDl5OogYba1BezIrVCogWMZBr0gM51zCxbtZBolM7DYUJWavn76lqDSx4fZBZBxfJWsYdiL0TYklZBfIxgMyz73ZCAAnf30wAZAQZDZD"
 
 #dump_one_and_one_post_elasticsearch(token)
 #search_posts_elasticsearch(token)
 
-
-#Newsfeed.newsfeed(token, [], 0, None)
+Newsfeed.newsfeed(token, [], 0, None)
 
 #dump_newsfeed_to_elasticsearch(token)
