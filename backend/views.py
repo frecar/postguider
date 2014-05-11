@@ -47,7 +47,7 @@ def analyze_post(token, text):
         )
 
     except Exception, e:
-        t = threading.Thread(target=Newsfeed.newsfeed, args=(token, [], 0, None))
+        t = threading.Thread(target=Newsfeed.newsfeed, args=(token, [], 0, None, 1500))
         t.setDaemon(True)
         t.start()
 

@@ -10,4 +10,4 @@ for post in es.search("_type:post")['hits']['hits']:
 
 
 for index in indices:
-    Newsfeed.newsfeed(index, [], 0, None)
+    Newsfeed.newsfeed(index, [], 0, None, 1500)
