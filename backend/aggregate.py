@@ -15,6 +15,8 @@ def should_user_post(data):
     for bucket, likes in enumerate(buckets):
         buckets[bucket] = buckets[bucket] / (post_count[bucket] + 1)
 
+    print buckets
+
     hour_now = datetime.datetime.now().hour
 
     post_now = False
@@ -36,3 +38,4 @@ def should_user_post(data):
         post_now = False
 
     return post_now, hours_to_wait
+

@@ -14,3 +14,4 @@ CONFIG = {
 app = Flask(__name__)
 app.config.update(CONFIG)
 cache = Cache(app)
+
