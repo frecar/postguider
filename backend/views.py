@@ -58,7 +58,7 @@ def analyze_post(token, text):
     if post_now_score < 0.5:
         response['hint'] = "You should wait for %s hours to post this\n" % hours_to_wait
 
-    response['post_now'] = response['score'] > 0.5
+    response['post_now'] = response['total_score'] > 0.5
 
     if response['post_now']:
         response['hint'] = "You're really good at this! Post this right away!"
