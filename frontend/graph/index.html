@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+    <html>
+      <head>
+        <title>Like Analysis Graph</title>
+<style>
+.chart {
+
+}
+
+.main text {
+    font: 10px sans-serif;
+}
+
+.axis line, .axis path {
+    shape-rendering: crispEdges;
+    stroke: black;
+    fill: none;
+}
+
+circle {
+    fill: rgb(158,208,240);
+}
+
+div.tooltip {
+  position: absolute;           
+  text-align: center;           
+  width: 60px;                  
+  height: 28px;                 
+  padding: 2px;             
+  font: 12px sans-serif;        
+  background: white;   
+  border: 0px;      
+  border-radius: 3px;           
+  pointer-events: none;         
+}
+
+</style>
+        <script type="text/javascript" src="http://mbostock.github.com/d3/d3.v2.js"></script>
+      </head>
+      <body>
+        <div class='content'>
+          <!-- /the chart goes here -->
+        </div>
+       <script type="text/javascript" src="testdata3.js"></script>
+       <script type="text/javascript" src="chart.js"></script>
+      </body>
+    </html>
