@@ -182,7 +182,7 @@ class Post:
                     break
 
             if not word_indexed:
-                score += 0.5
+                score += 0.2
 
         return score / (len(words)+1), len(words), text
 
@@ -203,7 +203,7 @@ class Word:
     def calculate_score(self):
         #score = (self.likes / (math.log(self.likes + 1, 2) + 1)) / self.count
 
-        score = self.likes / (math.log(self.count, 10) + 1)
+        score = (self.likes+1) / (math.log(self.count, 10) + 1)
         score = score / (self.likes + 1)
 
         if self.is_stopword():
