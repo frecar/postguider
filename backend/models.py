@@ -184,7 +184,7 @@ class Post:
             if not word_indexed:
                 score += 0.5
 
-        return score / (len(words)), len(words), text
+        return score / (len(words)+1), len(words), text
 
     def serialize(self):
         return {'id': self.id,
