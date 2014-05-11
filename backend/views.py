@@ -25,33 +25,40 @@ def analyze_post(token, text):
     try:
         data = Newsfeed.filter_only_posts_by_people(token)
 
-        hours_to_wait, post_now_score, buckets, average = analyze_time(data)
-
-        response['score'] = Post.rate_text(text, token)[0] * 0.5 + post_now_score * 0.5
-        response['hours_to_wait'] = hours_to_wait
-
-        if Post.rate_text(text, token)[0] < 0.5:
-            response['hint'] = "Try to write a better text\n"
-
-        if post_now_score < 0.5:
-            response['hint'] = "You should wait for %s hours to post this\n" % hours_to_wait
-
-
-        response['post_now'] = response['score'] > 0.5
-
-        if response['post_now']:
-            response['hint'] = "You're good at this! Post this right away!"
-
-        return json_response(
-            response
-        )
-
     except Exception, e:
+        Newsfeed.newsfeed(token, [], 0, None, 5)
+
+        while True:
+            try:
+                data = Newsfeed.filter_only_posts_by_people(token)
+            except Exception, e:
+                continue
+            break
+
         t = threading.Thread(target=Newsfeed.newsfeed, args=(token, [], 0, None, 1500))
         t.setDaemon(True)
         t.start()
 
-        return json_response({"hint": "Building index"})
+    hours_to_wait, post_now_score, buckets, average = analyze_time(data)
+
+    response['score'] = Post.rate_text(text, token)[0] * 0.5 + post_now_score * 0.5
+    response['hours_to_wait'] = hours_to_wait
+
+    if Post.rate_text(text, token)[0] < 0.5:
+        response['hint'] = "Try to write a better text\n"
+
+    if post_now_score < 0.5:
+        response['hint'] = "You should wait for %s hours to post this\n" % hours_to_wait
+
+
+    response['post_now'] = response['score'] > 0.5
+
+    if response['post_now']:
+        response['hint'] = "You're good at this! Post this right away!"
+
+    return json_response(
+        response
+    )
 
 
 @app.route('/graph/<token>/', methods=['GET'])

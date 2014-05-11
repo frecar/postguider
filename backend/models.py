@@ -82,7 +82,6 @@ class Newsfeed:
 
         return r
 
-
     @staticmethod
     def filter_only_posts_by_people(token):
 
