@@ -27,8 +27,6 @@ def dump_newsfeed(user_id):
         file.write(json.dumps(relevant_posts, cls=PostEncoder))
 
 
-
-
 def dump_relevant_newsfeed_to_elasticsearch(token):
     es = ElasticSearch('http://localhost:9200/')
 
