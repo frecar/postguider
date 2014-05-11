@@ -42,6 +42,9 @@ class Newsfeed:
             if 'from' in element and 'category' in element['from']:
                 continue
 
+            if 'shares' in element:
+                continue
+
             post = Post(element, token)
 
             try:
